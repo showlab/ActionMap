@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ActionMap</title>
+    <link rel="icon" href="misc/showlab.ico">
+
+    <style>
+        /* Keep only variables for colors, typography (font-family) and spacing */
+        :root {
+            /* Colors */
+            --color-primary-text: #262626;
+            --color-body-text: #0D0D0D;
+            --color-secondary-text: #7F7F7F;
+            --color-footer-text: #F2F2F2;
+            --color-button-bg: #0D0D0D;
+            --color-button-text: #FFFFFF;
+            --color-code-bg: #D9D9D9;
+            --color-footer-bg: #404040;
+            --color-link-hover: #4A90E2;
+
+            /* Typography (font-family) */
+            --font-title: 'SF-Pro-Display-Bold', Arial, sans-serif;
+            --font-subtitle: 'SF-Pro-Display-Regular', Arial, sans-serif;
+            --font-body: 'SF-Pro-Display-Light', Arial, sans-serif;
+            --font-body-highlight: 'SF-Pro-Display-Medium', Arial, sans-serif;
+            --font-button: 'SF-Pro-Rounded-Regular', Arial, sans-serif;
+            --font-code: 'SFMono-Regular', 'Courier New', monospace;
+
+            /* Spacing */
+            --spacing-small: 8px;
+            --spacing-medium: 16px;
+            --spacing-large: 24px;
+            --spacing-xl: 32px;
+            --spacing-xxl: 48px;
+            --margin-safe: 50px;
+            --spacing-xxxl: 64px;
+            --spacing-xxxxl: 96px;
+            --spacing-xxxxxl: 120px;
+
+            /* Line heights */
+            --line-height-normal: 1.15;
+            --line-height-code-between: 1.15;
+        }
+
+        /* Font Face Declarations (keep the same file names but avoid using generic family names)
+           Note: if you are using system fonts you don't need @font-face. These are examples. */
+        @font-face {
+            font-family: 'SF-Pro-Display-Bold';
+            src: url('fonts/SF-Pro-Display-Bold.otf') format('opentype');
+        }
+
+        @font-face {
+            font-family: 'SF-Pro-Display-Medium';
+            src: url('fonts/SF-Pro-Display-Medium.otf') format('opentype');
+        }
+
+        @font-face {
+            font-family: 'SF-Pro-Display-Light';
+            src: url('fonts/SF-Pro-Display-Light.otf') format('opentype');
+        }
+
+        @font-face {
+            font-family: 'SF-Pro-Display-Regular';
+            src: url('fonts/SF-Pro-Display-Regular.otf') format('opentype');
+        }
+
+        @font-face {
+            font-family: 'SF-Pro-Rounded-Regular';
+            src: url('fonts/SF-Pro-Rounded-Regular.otf') format('opentype');
+        }
+
+        @font-face {
+            font-family: 'SFMono-Regular';
+            src: url('fonts/SFMono-Regular.otf') format('opentype');
+        }
+
+        /* Reset + base */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { height: 100%; }
+
+        /* Make footer stick to bottom when content is short by using a column flex layout */
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* ensure it fills viewport */
+
+            /* Safe margins on both sides at all viewport widths */
+            padding-left: var(--margin-safe);
+            padding-right: var(--margin-safe);
+
+            font-family: var(--font-body);
+            font-size: 14px; /* base size written directly as requested */
+            color: var(--color-body-text);
+            line-height: var(--line-height-normal);
+            background-color: #FFFFFF;
+
+            letter-spacing: 0.02em;
+        }
+
+        /* Main centered container; content area limited and centered within body padding */
+        .container {
+            max-width: 1200px; /* explicit value */
+            width: 100%;
+            margin: 0 auto;
+            padding-top: var(--spacing-large);
+            /* allow main content to grow and push footer down */
+            flex: 1 0 auto;
+        }
+
+        /* HEADER */
+        .header-group { text-align: center; margin-bottom: var(--spacing-xxl); }
+
+        .main-title {
+            font-family: var(--font-title);
+            font-size: 32px; /* explicit */
+            color: var(--color-primary-text);
+            max-width: 960px;
+            margin: var(--spacing-xxxl) auto var(--spacing-medium) auto;
+            line-height: var(--line-height-normal);
+
+            letter-spacing: normal;
+        }
+
+        .subtitle1 {
+            font-family: var(--font-subtitle);
+            font-size: 16px; /* explicit */
+            color: var(--color-body-text);
+            max-width: 768px;
+            margin: var(--spacing-small) auto var(--spacing-small) auto; /* center the box while text remains left-aligned when needed */
+            line-height: var(--line-height-normal);
+            letter-spacing: 0.01em;
+        }
+
+        .subtitle2 {
+            font-family: var(--font-subtitle);
+            font-size: 14px; /* explicit */
+            color: var(--color-secondary-text);
+            max-width: 768px;
+            margin: var(--spacing-small) auto var(--spacing-large) auto;
+            line-height: var(--line-height-normal);
+            letter-spacing: 0.01em;
+        }
+
+        .button-group {
+            max-width: 768px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: var(--spacing-medium);
+            letter-spacing: 0.04em;
+        }
+
+        .btn {
+            background-color: var(--color-button-bg);
+            color: var(--color-button-text);
+            font-family: var(--font-button);
+            font-size: 14px; /* explicit */
+            text-decoration: none;
+            padding: 4px 16px; /* explicit */
+            border-radius: 20px;
+            transition: opacity 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: normal;
+        }
+
+        .btn-icon {
+            height: 1em;                 /* make icon match text height */
+            width: auto;                 /* preserve aspect ratio */
+            flex-shrink: 0;
+        }
+
+        .btn:hover { opacity: 0.8; }
+
+        /* MAIN CONTENT: center the "box" that holds paragraphs/code/figures while keeping text left-aligned inside the box */
+        .content-group { margin-bottom: var(--spacing-xxl); }
+
+        .content-title {
+            font-family: var(--font-title);
+            font-size: 20px; /* explicit value: matches your "Abstract, 20, #0D0D0D" */
+            color: var(--color-primary-text);
+            max-width: 540px; /* explicit */
+            margin: var(--spacing-xxxl) auto var(--spacing-large) auto; /* this centers the title box */
+            line-height: var(--line-height-normal);
+            text-align: center; /* 1) Make the "Abstract..." title center-aligned */
+            letter-spacing: normal;
+        }
+
+        /* body-text: the box is centered (margin: 0 auto) but text inside is left aligned */
+        .body-text {
+            font-family: var(--font-body);
+            font-size: 14px; /* explicit */
+            color: var(--color-body-text);
+            max-width: 768px; /* explicit */
+            margin: var(--spacing-small) auto var(--spacing-small) auto; /* 2) center the auxiliary box holding the body text */
+            line-height: var(--line-height-normal);
+            text-align: left; /* keep paragraphs left-aligned inside the centered box */
+        }
+
+        .body-text-highlight {
+            font-family: var(--font-body-highlight);
+            font-size: 18px; /* explicit */
+            color: var(--color-body-text);
+            max-width: 512px; /* explicit */
+            margin: var(--spacing-small) auto var(--spacing-small) auto; /* 2) center the auxiliary box holding the body text */
+            line-height: var(--line-height-normal);
+            text-align: left; /* keep paragraphs left-aligned inside the centered box */
+        }
+
+        .code-block {
+            background-color: var(--color-code-bg);
+            max-width: 768px; /* explicit */
+            margin: var(--spacing-large) auto var(--spacing-large) auto; /* center the code box */
+            padding: 16px; /* explicit */
+            border-radius: 4px;
+            position: relative;
+        }
+        .copy-btn {
+            position: absolute; top: 8px; right: 8px;
+            width: 30px; height: 30px;
+            background: rgba(255,255,255,0.55); border: none; border-radius: 4px;
+            color: #404040; cursor: pointer; font-size: 14px;
+            display: inline-flex; align-items: center; justify-content: center;
+            transition: background 0.15s ease, color 0.15s ease;
+        }
+        .copy-btn:hover { background: rgba(255,255,255,0.9); }
+        .copy-btn.copied { color: #2E7D32; }
+
+        .code-block code {
+            font-family: var(--font-code);
+            font-size: 12px; /* explicit */
+            color: var(--color-body-text);
+            line-height: var(--line-height-code-between);
+            white-space: pre-wrap;
+            word-break: break-all;
+            display: block;
+            letter-spacing: -0.02em;
+        }
+
+        /* Figure box centered as a block (the placeholder inside remains centered) */
+        .figure {
+            max-width: 960px; /* explicit */
+            width: 100%;
+            margin: var(--spacing-xxxl) auto var(--spacing-xxxl) auto;
+        }
+
+        .figure img { width: 100%; height: auto; display: block; }
+
+        .figure-placeholder {
+            background-color: #555555;
+            color: #CCCCCC;
+            padding: var(--spacing-xxl);
+            text-align: center;
+            border-radius: 4px;
+        }
+
+        .figure video {
+            width: 100%;
+            height: auto;
+            display: block;   /* removes extra whitespace */
+            pointer-events: none; /* prevents user interaction (optional) */
+        }
+
+
+        /* FOOTER: keep full-width background while footer content respects the safe margin and is centered */
+        .footer-group {
+            background-color: var(--color-footer-bg);
+
+            /* full-bleed background technique while keeping inner padding equal to the safe margin */
+            width: 100vw;
+            margin-left: calc(50% - 50vw);
+            margin-top: 0;
+            padding: 24px var(--margin-safe);
+            flex-shrink: 0; /* do not shrink footer */
+        }
+
+        .footer-content {
+            max-width: 1200px; /* explicit */
+            margin: var(--spacing-medium) auto;
+        }
+
+        .footer-text {
+            font-family: var(--font-body);
+            font-size: 10px; /* explicit */
+            color: var(--color-footer-text);
+            line-height: var(--line-height-normal);
+            text-align: left;
+            margin-bottom: var(--spacing-medium);
+        }
+
+        /* Links */
+        a { color: inherit; text-decoration: underline; transition: color 0.2s ease; }
+        a:hover { color: var(--color-link-hover); }
+        .btn a { color: inherit; text-decoration: none; }
+
+        /* Responsive tweaks: reduce safe margin and font sizes on small viewports. (Retain explicit values inside rules.) */
+        @media (max-width: 768px) {
+            :root { --margin-safe: 16px; }
+            .main-title { font-size: 28px; }
+        }
+
+        @media (max-width: 480px) {
+            :root { --margin-safe: 12px; }
+            .main-title { font-size: 24px; }
+            .subtitle1 { font-size: 13px; }
+        }
+
+        /* ===== Interactive charts (shared) ===== */
+        .charts-wrap { max-width: 980px; width: 100%; margin: var(--spacing-xxxl) auto; }
+        .chart-block { margin-bottom: var(--spacing-xl); }
+        .chart-heading {
+            font-family: var(--font-body-highlight);
+            font-size: 15px;
+            color: var(--color-primary-text);
+            text-align: center;
+            margin-bottom: var(--spacing-small);
+            letter-spacing: 0.01em;
+        }
+        .chart-row { display: flex; align-items: center; gap: var(--spacing-large); }
+        .chart-svg-holder { flex: 1 1 auto; min-width: 0; }
+        .bar-chart { width: 100%; height: auto; display: block; overflow: visible; }
+        .chart-legend {
+            flex: 0 0 206px;
+            display: flex; flex-direction: column; gap: 9px;
+            font-family: var(--font-body); font-size: 12.5px; color: var(--color-body-text);
+        }
+        /* horizontal legend (used under the side-by-side line charts) */
+        .chart-legend-h {
+            display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 20px;
+            font-family: var(--font-body); font-size: 12.5px; color: var(--color-body-text);
+            margin-top: var(--spacing-small);
+        }
+        .legend-item { display: flex; align-items: center; gap: 8px; transition: opacity 0.15s ease; }
+        .legend-swatch { width: 18px; height: 12px; border-radius: 2px; flex-shrink: 0; }
+        .legend-item.dim { opacity: 0.32; }
+        /* in-chart text */
+        .bar-rect { transition: opacity 0.15s ease; cursor: default; }
+        .bar-rect.dim { opacity: 0.26; }
+        .bar-rect.active { stroke: #333333; stroke-width: 1.2px; }
+        .bar-value { font-family: var(--font-body); fill: #595959; font-size: 12px; }
+        .axis-label { font-family: var(--font-body); fill: var(--color-secondary-text); font-size: 13px; }
+        .group-label { font-family: var(--font-body-highlight); fill: var(--color-body-text); font-size: 15px; }
+        .group-sublabel { font-family: var(--font-body); fill: var(--color-secondary-text); font-size: 11.5px; }
+        .axis-title { font-family: var(--font-body); fill: var(--color-secondary-text); font-size: 13px; }
+        .grid-line { stroke: #E8E8E8; stroke-width: 1px; }
+        /* line chart */
+        .line-series { transition: opacity 0.15s ease; }
+        .line-series.dim { opacity: 0.22; }
+        .line-marker { cursor: default; transition: stroke 0.1s ease; }
+        .line-marker.active { stroke: #333333; stroke-width: 1.8px; }
+        /* two line charts side by side */
+        .line-row {
+            max-width: 980px; width: 100%;
+            margin: var(--spacing-xxxl) auto;
+            display: flex; gap: var(--spacing-large); flex-wrap: wrap; justify-content: center;
+        }
+        .line-col { flex: 1 1 360px; min-width: 0; max-width: 480px; }
+        .chart-tooltip {
+            position: fixed; pointer-events: none; z-index: 50;
+            background: rgba(13,13,13,0.92); color: #FFFFFF;
+            font-family: var(--font-body); font-size: 12px; line-height: 1.35;
+            padding: 6px 9px; border-radius: 5px; opacity: 0; transition: opacity 0.12s ease;
+            white-space: nowrap; transform: translate(-50%, -130%);
+        }
+        @media (max-width: 768px) {
+            .chart-row { flex-direction: column; align-items: stretch; gap: var(--spacing-medium); }
+            .chart-legend { flex-basis: auto; flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 6px 16px; }
+        }
+
+        /* ===== Real-world task panels: small bar chart paired with rollout video ===== */
+        .rw-legend {
+            display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 24px;
+            font-family: var(--font-body); font-size: 12.5px; color: var(--color-body-text);
+            margin: var(--spacing-large) auto var(--spacing-small) auto;
+        }
+        .rw-legend span { display: inline-flex; align-items: center; gap: 8px; }
+        .task-row {
+            max-width: 980px; width: 100%;
+            margin: var(--spacing-medium) auto var(--spacing-xxxl) auto;
+            display: flex; gap: var(--spacing-large); flex-wrap: wrap; justify-content: center;
+        }
+        .task-item { flex: 1 1 280px; max-width: 312px; margin: 0; display: flex; flex-direction: column; }
+        .task-chart { width: 100%; margin-top: var(--spacing-small); }
+
+        /* ===== Video (qualitative real-robot rollouts) ===== */
+        .video-wrap {
+            position: relative; width: 100%; aspect-ratio: 1680 / 990;
+            background: #F0F0F0; border-radius: 4px; overflow: hidden;
+            cursor: zoom-in;
+        }
+        .video-wrap video {
+            position: absolute; inset: 0; width: 100%; height: 100%;
+            object-fit: cover; display: block; pointer-events: none;
+        }
+        .video-loader {
+            position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+            background: #F0F0F0; transition: opacity 0.3s ease; pointer-events: none;
+        }
+        .video-loader.hidden { opacity: 0; visibility: hidden; }
+        .spinner {
+            width: 30px; height: 30px; border-radius: 50%;
+            border: 3px solid #DADADA; border-top-color: #8A8A8A;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .video-progress {
+            width: 100%; height: 3px; background: #E6E6E6; border-radius: 2px;
+            margin-top: 6px; overflow: hidden;
+        }
+        .video-progress-bar { height: 100%; width: 0%; background: #91A0B1; }
+        .video-caption {
+            font-family: var(--font-body); font-size: 13px; color: var(--color-secondary-text);
+            text-align: center; margin-top: var(--spacing-small); letter-spacing: 0.01em;
+        }
+
+        /* ===== Lightbox (click a video to zoom) ===== */
+        .lightbox {
+            position: fixed; inset: 0; z-index: 100;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(0,0,0,0);
+            visibility: hidden;
+            transition: background 0.32s ease, visibility 0s linear 0.34s;
+            cursor: zoom-out;
+        }
+        .lightbox.open {
+            background: rgba(0,0,0,0.86);
+            visibility: visible;
+            transition: background 0.32s ease, visibility 0s;
+        }
+        .lightbox video {
+            max-width: 90vw; max-height: 88vh; width: auto; height: auto;
+            border-radius: 6px; pointer-events: none;
+            box-shadow: 0 24px 70px rgba(0,0,0,0.55);
+            transform: scale(0.82); opacity: 0;
+            transition: transform 0.34s cubic-bezier(0.2,0.8,0.25,1), opacity 0.3s ease;
+        }
+        .lightbox.open video { transform: scale(1); opacity: 1; }
+    </style>
+
+    <!-- Font Awesome (free version) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Academicons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+</head>
+<body>
+    <div class="container">
+
+
+
+        <!-- Group 1: Header Section -->
+        <div class="header-group">
+            <h1 class="main-title">ActionMap: Robot Policy Learning via Voxel Action Heatmap</h1>
+            <p class="subtitle1"><a href="https://yangpei-comp.github.io/">Pei Yang</a><sup>1,&#42;</sup>, <a href="https://scholar.google.com/citations?user=GMrjppAAAAAJ&hl=en">Hai Ci</a><sup>1,&#42;,&dagger;</sup>, <a href="https://chenanno.github.io/">Yanzhe Chen</a><sup>1,&#42;</sup>, <a href="https://aopolin-lv.github.io/">Qi Lv</a><sup>1</sup>, <a href="https://han-cai.github.io/">Han Cai</a><sup>2</sup>, and <a href="https://sites.google.com/view/showlab">Mike Zheng Shou</a><sup>1,&#x2709</sup></p>
+            <p class="subtitle2" style="margin-bottom: 0;"><sup>1</sup> <a href="https://sites.google.com/view/showlab/home?authuser=0">Show Lab</a>, National University of Singapore &nbsp;&nbsp;&nbsp;&nbsp; <sup>2</sup> NVIDIA</p>
+            <p class="subtitle2" style="margin-top: 2px;"><sup>&#42;</sup> Equal contribution &nbsp;&nbsp;&nbsp;&nbsp; <sup>&dagger;</sup> Project lead &nbsp;&nbsp;&nbsp;&nbsp; <sup>&#x2709</sup> Corresponding author</p>
+
+            <div class="button-group">
+                <a class="btn">
+                    <i class="ai ai-arxiv"></i>
+                    Paper (coming soon)
+                </a>
+                <a class="btn" href="https://github.com/showlab/actionmap" target="_blank" rel="noopener">
+                    <i class="fab fa-github btn-icon"></i>
+                    Code (coming soon)
+                </a>
+            </div>
+        </div>
+
+
+        <!-- extra breathing room between the header and the first paragraph -->
+        <div style="height: var(--spacing-xl);"></div>
+
+
+        <p class="body-text-highlight">
+            ActionMap replaces the single-point action decoder of vision-language-action (VLA) models with a voxel action heatmap, improving success rate, data efficiency, and convergence across LIBERO simulation and real-world Franka manipulation.
+        </p>
+
+        <div style="height: var(--spacing-large);"></div>
+
+        <!-- Teaser -->
+        <div class="figure">
+            <img src="media/teaser.png" alt="ActionMap teaser: single-point paradigm vs. voxel action heatmap paradigm">
+        </div>
+
+        <div style="height: var(--spacing-large);"></div>
+
+
+        <p class="body-text-highlight">
+            Many VLAs predict each action as a single point in continuous space, whether through token bins, L1 regression, or flow matching, leaving the geometry of neighboring actions unused. ActionMap instead predicts three voxel heatmaps, over translation, rotation, and gripper, trained by cross-entropy against a soft Gaussian blob centered on the ground-truth action.
+        </p>
+
+
+        <div style="height: var(--spacing-large);"></div>
+
+
+        <div class="figure">
+            <img src="media/method_training.png" alt="ActionMap action head and training objective">
+        </div>
+
+
+        <div style="height: var(--spacing-large);"></div>
+
+
+        <p class="body-text-highlight">
+            ActionMap swaps only the action decoder, so the same head drops into different VLA backbones without changing anything else. The figure below shows one such instantiation, replacing OpenVLA-OFT's L1 regression head, where each heatmap is decoded into a continuous action by hard argmax or top-k soft-argmax.
+        </p>
+
+
+        <div style="height: var(--spacing-large);"></div>
+
+
+        <div class="figure">
+            <img src="media/method_inference.png" alt="ActionMap as a drop-in decoder, illustrated on OpenVLA-OFT alongside OpenVLA">
+        </div>
+
+
+        <div style="height: var(--spacing-large);"></div>
+
+
+        <p class="body-text-highlight">
+            On LIBERO, dropping ActionMap into both backbones lifts the four-suite average at matched training steps, by +8.2% over OpenVLA-OFT's L1 head and +1.6% over &pi;<sub>0.5</sub>'s flow-matching head, while converging at least as fast.
+        </p>
+
+
+        <div style="height: var(--spacing-large);"></div>
+
+
+        <!-- Interactive LIBERO main-results bar charts (hover bars / legend) -->
+        <div class="charts-wrap">
+            <div class="chart-block">
+                <div class="chart-heading">OpenVLA-OFT backbone</div>
+                <div class="chart-row">
+                    <div class="chart-svg-holder" id="chart-oft-svg"></div>
+                    <div class="chart-legend" id="chart-oft-legend"></div>
+                </div>
+            </div>
+            <div class="chart-block">
+                <div class="chart-heading">&pi;<sub>0.5</sub> backbone</div>
+                <div class="chart-row">
+                    <div class="chart-svg-holder" id="chart-pi-svg"></div>
+                    <div class="chart-legend" id="chart-pi-legend"></div>
+                </div>
+            </div>
+        </div>
+
+
+        <div style="height: var(--spacing-large);"></div>
+
+
+        <p class="body-text-highlight">
+            The advantage widens as data shrinks. With only 10% of the demonstrations, ActionMap holds 93.2% on LIBERO-Spatial while the L1 regression head collapses to 67.2%.
+        </p>
+
+
+        <div style="height: var(--spacing-large);"></div>
+
+
+        <!-- Interactive data-efficiency line charts, side by side (hover markers / legend) -->
+        <div class="line-row">
+            <div class="line-col">
+                <div class="chart-heading">OpenVLA-OFT backbone</div>
+                <div class="chart-svg-holder" id="line-oft-svg"></div>
+                <div class="chart-legend-h" id="line-oft-legend"></div>
+            </div>
+            <div class="line-col">
+                <div class="chart-heading">&pi;<sub>0.5</sub> backbone</div>
+                <div class="chart-svg-holder" id="line-pi-svg"></div>
+                <div class="chart-legend-h" id="line-pi-legend"></div>
+            </div>
+        </div>
+
+
+        <div style="height: var(--spacing-large);"></div>
+
+
+        <p class="body-text-highlight">
+            On a real Franka Research 3 robot, ActionMap wins on every task at full data and reduces end-effector grasp-position error by two to three times. Below, each task pairs a heatmap rollout with its success counts, with the predicted heatmaps staying sharp and well-localized throughout the episode.
+        </p>
+
+
+        <!-- enlarged spacing between the paragraph and the bar-chart / video group -->
+        <div style="height: var(--spacing-xxxl);"></div>
+
+
+        <!-- Real-world: small interactive bar chart paired with rollout video, per task -->
+        <div class="rw-legend">
+            <span><span class="legend-swatch" style="background:#91a0b1"></span>OpenVLA-OFT</span>
+            <span><span class="legend-swatch" style="background:#e69ca3"></span>OpenVLA-OFT + Ours</span>
+        </div>
+        <div class="task-row">
+            <figure class="task-item">
+                <div class="video-wrap" data-src="media/pick.mp4">
+                    <div class="video-loader"><div class="spinner"></div></div>
+                    <video muted loop autoplay playsinline preload="metadata">
+                        <source src="media/pick.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="video-progress"><div class="video-progress-bar"></div></div>
+                <div class="task-chart" id="rw-pick"></div>
+                <figcaption class="video-caption">Pick Brick</figcaption>
+            </figure>
+            <figure class="task-item">
+                <div class="video-wrap" data-src="media/sweep.mp4">
+                    <div class="video-loader"><div class="spinner"></div></div>
+                    <video muted loop autoplay playsinline preload="metadata">
+                        <source src="media/sweep.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="video-progress"><div class="video-progress-bar"></div></div>
+                <div class="task-chart" id="rw-sweep"></div>
+                <figcaption class="video-caption">Sweep Brick</figcaption>
+            </figure>
+            <figure class="task-item">
+                <div class="video-wrap" data-src="media/insert.mp4">
+                    <div class="video-loader"><div class="spinner"></div></div>
+                    <video muted loop autoplay playsinline preload="metadata">
+                        <source src="media/insert.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="video-progress"><div class="video-progress-bar"></div></div>
+                <div class="task-chart" id="rw-insert"></div>
+                <figcaption class="video-caption">Insert Card</figcaption>
+            </figure>
+        </div>
+
+
+        <div style="height: var(--spacing-large);"></div>
+
+
+        <div class="content-group">
+            <div class="code-block">
+                <button class="copy-btn" id="copy-cite" aria-label="Copy citation" title="Copy"><i class="fa-solid fa-copy"></i></button>
+                <code id="cite-code">@article{actionmap,
+    title={ActionMap: Robot Policy Learning via Voxel Action Heatmap},
+    author={Pei Yang and Hai Ci and Yanzhe Chen and Qi Lv and Han Cai and Mike Zheng Shou},
+    year={2026},
+    archivePrefix={arXiv},
+}</code>
+            </div>
+        </div>
+
+
+
+    <!-- Group 4: Footer -->
+    <div class="footer-group">
+        <div class="footer-content">
+            <p class="footer-text">© 2026 Show Lab.</p>
+            <p class="footer-text">Licenced under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en">CC BY-NC-SA 4.0</a>. &nbsp; Fonts are excluded. &nbsp; If reusing this template, please keep this <a href="https://macos-world.github.io">link</a> in the footer.</p>
+        </div>
+    </div>
+
+    <!-- Lightbox overlay for zooming a rollout video -->
+    <div class="lightbox" id="lightbox">
+        <video muted loop autoplay playsinline></video>
+    </div>
+
+    <script>
+    (function () {
+        "use strict";
+        var SVGNS = "http://www.w3.org/2000/svg";
+
+        var tooltip = null;
+        function getTooltip() {
+            if (!tooltip) {
+                tooltip = document.createElement("div");
+                tooltip.className = "chart-tooltip";
+                document.body.appendChild(tooltip);
+            }
+            return tooltip;
+        }
+        function el(tag, attrs) {
+            var n = document.createElementNS(SVGNS, tag);
+            for (var k in attrs) { n.setAttribute(k, attrs[k]); }
+            return n;
+        }
+        function num(cfg, key, def) { return (cfg[key] === undefined ? def : cfg[key]); }
+
+        // ---- shared hover handlers (work for bars and line markers) ----
+        function showTip(e) {
+            var r = e.currentTarget, t = getTooltip();
+            t.innerHTML = "<b>" + r.dataset.label + "</b><br>" + r.dataset.group + ": " + r.dataset.disp + (r.dataset.unit || "");
+            t.style.left = e.clientX + "px";
+            t.style.top = e.clientY + "px";
+            t.style.opacity = "1";
+        }
+        function onBarEnter(e) { e.currentTarget.classList.add("active"); }
+        function onBarLeave(e) { e.currentTarget.classList.remove("active"); if (tooltip) tooltip.style.opacity = "0"; }
+        function onMarkEnter(e) { e.currentTarget.setAttribute("r", 6.6); e.currentTarget.classList.add("active"); }
+        function onMarkLeave(e) { e.currentTarget.setAttribute("r", 4.6); e.currentTarget.classList.remove("active"); if (tooltip) tooltip.style.opacity = "0"; }
+
+        function highlight(svg, legendEl, si) {
+            svg.querySelectorAll(".bar-rect").forEach(function (b) { b.classList.toggle("dim", b.dataset.series !== String(si)); });
+            svg.querySelectorAll(".line-series").forEach(function (g) { g.classList.toggle("dim", g.dataset.series !== String(si)); });
+            if (legendEl) legendEl.querySelectorAll(".legend-item").forEach(function (it) { it.classList.toggle("dim", it.dataset.series !== String(si)); });
+        }
+        function clearHi(svg, legendEl) {
+            svg.querySelectorAll(".bar-rect").forEach(function (b) { b.classList.remove("dim"); });
+            svg.querySelectorAll(".line-series").forEach(function (g) { g.classList.remove("dim"); });
+            if (legendEl) legendEl.querySelectorAll(".legend-item").forEach(function (it) { it.classList.remove("dim"); });
+        }
+        function buildLegend(legendEl, svg, series) {
+            series.forEach(function (s, si) {
+                var item = document.createElement("div");
+                item.className = "legend-item";
+                item.dataset.series = si;
+                var sw = document.createElement("span");
+                sw.className = "legend-swatch";
+                sw.style.background = s.color;
+                var tx = document.createElement("span");
+                tx.innerHTML = s.label;
+                item.appendChild(sw);
+                item.appendChild(tx);
+                item.addEventListener("mouseenter", function () { highlight(svg, legendEl, si); });
+                item.addEventListener("mouseleave", function () { clearHi(svg, legendEl); });
+                legendEl.appendChild(item);
+            });
+        }
+
+        function gridAndAxis(svg, cfg, geo) {
+            var y = geo.y, padL = geo.padL, padR = geo.padR, W = geo.W, plotH = geo.plotH, padT = geo.padT;
+            cfg.yTicks.forEach(function (t) {
+                var yy = y(t);
+                svg.appendChild(el("line", { x1: padL, x2: W - padR, y1: yy, y2: yy, "class": "grid-line" }));
+                var lb = el("text", { x: padL - 7, y: yy + 3, "text-anchor": "end", "class": "axis-label" });
+                lb.textContent = t;
+                svg.appendChild(lb);
+            });
+            if (cfg.axisTitle) {
+                var yt = el("text", { transform: "translate(14," + (padT + plotH / 2) + ") rotate(-90)", "text-anchor": "middle", "class": "axis-title" });
+                yt.textContent = cfg.axisTitle;
+                svg.appendChild(yt);
+            }
+        }
+
+        function groupLabel(svg, cx, baseY, text, sub) {
+            var gl = el("text", { x: cx, y: baseY, "text-anchor": "middle", "class": "group-label" });
+            gl.textContent = text;
+            svg.appendChild(gl);
+            if (sub) {
+                var gs = el("text", { x: cx, y: baseY + 16, "text-anchor": "middle", "class": "group-sublabel" });
+                gs.textContent = sub;
+                svg.appendChild(gs);
+            }
+        }
+
+        function renderBarChart(holder, legendEl, cfg) {
+            var W = num(cfg, "W", 760), H = num(cfg, "H", 200);
+            var padL = num(cfg, "padL", 52), padR = num(cfg, "padR", 14), padT = num(cfg, "padT", 18), padB = num(cfg, "padB", 32);
+            var plotW = W - padL - padR, plotH = H - padT - padB;
+            var yMin = cfg.yMin, yMax = cfg.yMax;
+            var unit = num(cfg, "unit", "%");
+            var fmt = cfg.valueFmt || function (v) { return v.toFixed(1); };
+            var y = function (v) { return padT + plotH * (1 - (v - yMin) / (yMax - yMin)); };
+
+            var svg = el("svg", { viewBox: "0 0 " + W + " " + H, "class": "bar-chart" });
+            svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+            gridAndAxis(svg, cfg, { y: y, padL: padL, padR: padR, W: W, plotH: plotH, padT: padT });
+
+            var nG = cfg.groups.length, nS = cfg.series.length;
+            var groupW = plotW / nG, groupPad = groupW * 0.18, innerW = groupW - groupPad, barW = innerW / nS;
+            var baseY = y(yMin);
+
+            cfg.groups.forEach(function (g, gi) {
+                var gx = padL + gi * groupW + groupPad / 2;
+                cfg.series.forEach(function (s, si) {
+                    var v = s.values[gi];
+                    var bx = gx + si * barW, by = y(v);
+                    var rect = el("rect", { x: bx + 1, width: Math.max(barW - 2, 1), y: by, height: Math.max(baseY - by, 0), fill: s.color, "class": "bar-rect" });
+                    rect.dataset.series = si;
+                    rect.dataset.label = s.label;
+                    rect.dataset.group = (cfg.groupSubs ? cfg.groupSubs[gi] : g);
+                    rect.dataset.disp = fmt(v);
+                    rect.dataset.unit = unit;
+                    rect.addEventListener("mouseenter", onBarEnter);
+                    rect.addEventListener("mousemove", showTip);
+                    rect.addEventListener("mouseleave", onBarLeave);
+                    svg.appendChild(rect);
+                    var vt = el("text", { x: bx + barW / 2, y: by - 4, "text-anchor": "middle", "class": "bar-value" });
+                    vt.textContent = fmt(v);
+                    svg.appendChild(vt);
+                });
+                groupLabel(svg, padL + gi * groupW + groupW / 2, H - padB + 20, g, cfg.groupSubs ? cfg.groupSubs[gi] : null);
+            });
+
+            holder.appendChild(svg);
+            if (legendEl) buildLegend(legendEl, svg, cfg.series);
+        }
+
+        function renderLineChart(holder, legendEl, cfg) {
+            var W = num(cfg, "W", 380), H = num(cfg, "H", 205);
+            var padL = num(cfg, "padL", 46), padR = num(cfg, "padR", 16), padT = num(cfg, "padT", 18), padB = num(cfg, "padB", 34);
+            var inset = num(cfg, "dataInset", 24);
+            var plotW = W - padL - padR, plotH = H - padT - padB;
+            var yMin = cfg.yMin, yMax = cfg.yMax;
+            var unit = num(cfg, "unit", "%");
+            var fmt = cfg.valueFmt || function (v) { return v.toFixed(1); };
+            var y = function (v) { return padT + plotH * (1 - (v - yMin) / (yMax - yMin)); };
+            var n = cfg.cats.length;
+            var xStart = padL + inset, xEnd = W - padR - inset;
+            var x = function (i) { return xStart + (xEnd - xStart) * (n === 1 ? 0.5 : i / (n - 1)); };
+
+            var svg = el("svg", { viewBox: "0 0 " + W + " " + H, "class": "bar-chart" });
+            svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+            gridAndAxis(svg, cfg, { y: y, padL: padL, padR: padR, W: W, plotH: plotH, padT: padT });
+
+            cfg.cats.forEach(function (c, i) {
+                groupLabel(svg, x(i), H - padB + 22, c, null);
+            });
+
+            cfg.series.forEach(function (s, si) {
+                var g = el("g", { "class": "line-series" });
+                g.dataset.series = si;
+                var pts = s.values.map(function (v, i) { return x(i) + "," + y(v); }).join(" ");
+                g.appendChild(el("polyline", { points: pts, fill: "none", stroke: s.color, "stroke-width": 2.6, "stroke-linejoin": "round", "stroke-linecap": "round" }));
+                s.values.forEach(function (v, i) {
+                    var cx = x(i), cy = y(v);
+                    var c = el("circle", { cx: cx, cy: cy, r: 4.6, fill: s.color, stroke: "#FFFFFF", "stroke-width": 1.4, "class": "line-marker" });
+                    c.dataset.series = si;
+                    c.dataset.label = s.label;
+                    c.dataset.group = cfg.cats[i];
+                    c.dataset.disp = fmt(v);
+                    c.dataset.unit = unit;
+                    c.addEventListener("mouseenter", onMarkEnter);
+                    c.addEventListener("mousemove", showTip);
+                    c.addEventListener("mouseleave", onMarkLeave);
+                    g.appendChild(c);
+                    var ly = (si === cfg.series.length - 1) ? cy - 11 : cy + 18;
+                    var vt = el("text", { x: cx, y: ly, "text-anchor": "middle", "class": "bar-value" });
+                    vt.textContent = fmt(v);
+                    g.appendChild(vt);
+                });
+                svg.appendChild(g);
+            });
+
+            holder.appendChild(svg);
+            if (legendEl) buildLegend(legendEl, svg, cfg.series);
+        }
+
+        var GROUPS = ["Spatial", "Object", "Goal", "Long", "Average"];
+        var C = { base1: "#91a0b1", base2: "#d0d7de", ours1: "#e69ca3", ours2: "#f3d1d4" };
+        var LINE = { base: "#185078", ours: "#982030" };
+        var intFmt = function (v) { return String(v); };
+
+        // ----- LIBERO main results (bar) -----
+        renderBarChart(document.getElementById("chart-oft-svg"), document.getElementById("chart-oft-legend"), {
+            yMin: 60, yMax: 100, yTicks: [60, 70, 80, 90, 100], groups: GROUPS,
+            series: [
+                { label: "OpenVLA-OFT (10K steps)", color: C.base1, values: [95.2, 97.8, 96.0, 67.2, 89.1] },
+                { label: "OpenVLA-OFT (50–150K steps)", color: C.base2, values: [97.6, 98.4, 97.9, 94.5, 97.1] },
+                { label: "OpenVLA-OFT + Ours (10K steps)", color: C.ours1, values: [98.4, 99.4, 97.6, 93.8, 97.3] },
+                { label: "OpenVLA-OFT + Ours (10K steps, best decoding)", color: C.ours2, values: [98.8, 99.6, 98.2, 96.0, 98.2] }
+            ]
+        });
+        renderBarChart(document.getElementById("chart-pi-svg"), document.getElementById("chart-pi-legend"), {
+            yMin: 85, yMax: 100, yTicks: [85, 90, 95, 100], groups: GROUPS,
+            series: [
+                { label: "π<sub>0.5</sub> (10K steps)", color: C.base1, values: [98.0, 98.4, 96.6, 90.0, 95.8] },
+                { label: "π<sub>0.5</sub> (30K steps)", color: C.base2, values: [98.8, 98.2, 98.0, 92.4, 96.9] },
+                { label: "π<sub>0.5</sub> + Ours (10K steps)", color: C.ours1, values: [98.6, 99.2, 98.2, 96.0, 98.0] },
+                { label: "π<sub>0.5</sub> + Ours (30K steps)", color: C.ours2, values: [99.8, 98.6, 98.2, 97.2, 98.5] }
+            ]
+        });
+
+        // ----- Data efficiency (line, side by side) -----
+        var DE_CATS = ["10%", "25%", "50%", "Full"];
+        renderLineChart(document.getElementById("line-oft-svg"), document.getElementById("line-oft-legend"), {
+            yMin: 60, yMax: 100, yTicks: [60, 70, 80, 90, 100], cats: DE_CATS,
+            series: [
+                { label: "OpenVLA-OFT", color: LINE.base, values: [67.2, 82.8, 82.4, 95.2] },
+                { label: "OpenVLA-OFT + Ours", color: LINE.ours, values: [93.2, 93.0, 97.2, 98.4] }
+            ]
+        });
+        renderLineChart(document.getElementById("line-pi-svg"), document.getElementById("line-pi-legend"), {
+            yMin: 92, yMax: 100, yTicks: [92, 94, 96, 98, 100], cats: DE_CATS,
+            series: [
+                { label: "π<sub>0.5</sub>", color: LINE.base, values: [92.8, 96.8, 96.0, 97.2] },
+                { label: "π<sub>0.5</sub> + Ours", color: LINE.ours, values: [93.6, 97.3, 97.2, 98.4] }
+            ]
+        });
+
+        // ----- Real-world per-task small bar charts (success counts out of 10) -----
+        var RW = [
+            { id: "rw-pick", subs: ["50 demos", "225 demos"], oft: [1, 5], ours: [4, 8] },
+            { id: "rw-sweep", subs: ["50 demos", "200 demos"], oft: [3, 2], ours: [10, 7] },
+            { id: "rw-insert", subs: ["50 demos", "275 demos"], oft: [0, 0], ours: [0, 5] }
+        ];
+        RW.forEach(function (t) {
+            renderBarChart(document.getElementById(t.id), null, {
+                W: 300, H: 210, padL: 28, padR: 10, padT: 16, padB: 44,
+                yMin: 0, yMax: 10, yTicks: [0, 5, 10], axisTitle: null, unit: "/10", valueFmt: intFmt,
+                groups: ["Partial", "Full"], groupSubs: t.subs,
+                series: [
+                    { label: "OpenVLA-OFT", color: C.base1, values: t.oft },
+                    { label: "OpenVLA-OFT + Ours", color: C.ours1, values: t.ours }
+                ]
+            });
+        });
+
+        // ----- videos: loader + continuous (rAF) progress bar, auto-loop, no pause; click to zoom -----
+        var vids = [];
+        document.querySelectorAll(".task-item").forEach(function (item) {
+            var wrap = item.querySelector(".video-wrap");
+            var video = item.querySelector("video");
+            var loader = item.querySelector(".video-loader");
+            var bar = item.querySelector(".video-progress-bar");
+            function hideLoader() { loader.classList.add("hidden"); }
+            if (video.readyState >= 3) { hideLoader(); }
+            video.addEventListener("loadeddata", hideLoader);
+            video.addEventListener("canplay", hideLoader);
+            video.addEventListener("playing", hideLoader);
+            var p = video.play();
+            if (p && p.catch) { p.catch(function () {}); }
+            wrap.addEventListener("click", function () { openLightbox(wrap.getAttribute("data-src")); });
+            vids.push({ video: video, bar: bar });
+        });
+        function rafProgress() {
+            for (var i = 0; i < vids.length; i++) {
+                var v = vids[i].video;
+                if (v.duration) { vids[i].bar.style.width = (v.currentTime / v.duration * 100) + "%"; }
+            }
+            requestAnimationFrame(rafProgress);
+        }
+        requestAnimationFrame(rafProgress);
+
+        // ----- lightbox: zoom a video on click; click anywhere closes; cannot be paused -----
+        var lightbox = document.getElementById("lightbox");
+        var lbVideo = lightbox.querySelector("video");
+        function openLightbox(src) {
+            if (lbVideo.getAttribute("src") !== src) { lbVideo.setAttribute("src", src); }
+            lightbox.classList.add("open");
+            var p = lbVideo.play();
+            if (p && p.catch) { p.catch(function () {}); }
+        }
+        function closeLightbox() {
+            lightbox.classList.remove("open");
+            lbVideo.pause();
+        }
+        lightbox.addEventListener("click", closeLightbox);
+
+        // ----- copy citation to clipboard -----
+        function fallbackCopy(text) {
+            var ta = document.createElement("textarea");
+            ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+            document.body.appendChild(ta); ta.focus(); ta.select();
+            try { document.execCommand("copy"); } catch (e) {}
+            document.body.removeChild(ta);
+        }
+        var copyBtn = document.getElementById("copy-cite");
+        if (copyBtn) {
+            copyBtn.addEventListener("click", function () {
+                var code = document.getElementById("cite-code");
+                var text = code ? code.textContent : "";
+                function done() {
+                    copyBtn.classList.add("copied");
+                    copyBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
+                    setTimeout(function () {
+                        copyBtn.classList.remove("copied");
+                        copyBtn.innerHTML = '<i class="fa-solid fa-copy"></i>';
+                    }, 1600);
+                }
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(text).then(done, function () { fallbackCopy(text); done(); });
+                } else { fallbackCopy(text); done(); }
+            });
+        }
+    })();
+    </script>
+</body>
+</html>
