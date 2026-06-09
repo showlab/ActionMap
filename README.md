@@ -3,7 +3,7 @@
 </div>
 
 <div align="center">
-    <a href="https://yangpei-comp.github.io/">Pei Yang</a><sup>1,&#42;</sup>&nbsp;, <a href="https://scholar.google.com/citations?user=GMrjppAAAAAJ&hl=en">Hai Ci</a><sup>1,&#42;,&dagger;</sup>&nbsp;, <a href="https://chenanno.github.io/">Yanzhe Chen</a><sup>1,&#42;</sup>&nbsp;, <a href="https://aopolin-lv.github.io/">Qi Lv</a><sup>1</sup>&nbsp;, <a href="https://han-cai.github.io/">Han Cai</a><sup>2</sup>&nbsp;, and <a href="https://sites.google.com/view/showlab">Mike Zheng Shou</a><sup>1,&#x2709;</sup>
+    <a href="https://yangpei-comp.github.io/">Pei Yang</a><sup>1,&#42;</sup>&nbsp;, <a href="https://scholar.google.com/citations?user=GMrjppAAAAAJ&hl=en">Hai Ci</a><sup>1,&#42;</sup>&nbsp;, <a href="https://chenanno.github.io/">Yanzhe Chen</a><sup>1,&#42;</sup>&nbsp;, <a href="https://aopolin-lv.github.io/">Qi Lv</a><sup>1</sup>&nbsp;, <a href="https://han-cai.github.io/">Han Cai</a><sup>2</sup>&nbsp;, and <a href="https://sites.google.com/view/showlab">Mike Zheng Shou</a><sup>1,&#x2709;</sup>
 </div>
 
 <div align="center">
@@ -12,15 +12,24 @@
     <sup>2</sup> NVIDIA
 </div>
 
+<!--
 <div align="center">
-    <sup>&#42;</sup> Equal contribution &nbsp;&nbsp; <sup>&dagger;</sup> Project lead &nbsp;&nbsp; <sup>&#x2709;</sup> Corresponding author
+    <sup>&#42;</sup> Equal contribution &nbsp;&nbsp; <sup>&#x2709;</sup> Corresponding author
+</div>
+-->
+
+
+<br/>
+
+<div align="center">
+    <a href='https://showlab.github.io/ActionMap/'>https://showlab.github.io/ActionMap/</a>
 </div>
 
 <br/>
 
 <div align="center">
-    <a href="#">
-        <img src="https://img.shields.io/badge/arXiv-Coming%20Soon-b31b1b.svg?logo=arXiv">
+    <a href="https://arxiv.org/abs/2606.06904">
+        <img src="https://img.shields.io/badge/arXiv-2606.06904-b31b1b.svg?logo=arXiv">
     </a>
 </div>
 
@@ -77,6 +86,9 @@ pred_actions = head.predict_action(actions_hidden)       # (B, num_actions_chunk
     title={ActionMap: Robot Policy Learning via Voxel Action Heatmap}, 
     author={Pei Yang and Hai Ci and Yanzhe Chen and Qi Lv and Han Cai and Mike Zheng Shou},
     year={2026},
+    eprint={2606.06904},
     archivePrefix={arXiv},
+    primaryClass={cs.RO},
+    url={https://arxiv.org/abs/2606.06904}, 
 }
 ```
