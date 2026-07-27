@@ -632,6 +632,42 @@
         <div style="height: var(--spacing-large);"></div>
 
 
+        <p class="body-text-highlight">
+            ActionMap also resolves ambiguity when more than one action is valid. For example, when an obstacle needs to be bypassed on either side, the L1 regression head averages the two modes into a middle path that hits the obstacle. Our ActionMap head instead keeps one peak per side, and the decoder could commit to either one.
+        </p>
+
+
+        <div style="height: var(--spacing-xxxl);"></div>
+
+
+        <!-- Multi-modal obstacle bypass: baseline vs. ours rollouts, side by side -->
+        <div class="task-row" id="bypass-row">
+            <figure class="task-item">
+                <div class="video-wrap" data-src="media/bypass_oft.mp4">
+                    <div class="video-loader"><div class="spinner"></div></div>
+                    <video muted loop autoplay playsinline preload="auto">
+                        <source src="media/bypass_oft.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="video-progress"><div class="video-progress-bar"></div></div>
+                <figcaption class="video-caption">OpenVLA-OFT</figcaption>
+            </figure>
+            <figure class="task-item">
+                <div class="video-wrap" data-src="media/bypass_ours.mp4">
+                    <div class="video-loader"><div class="spinner"></div></div>
+                    <video muted loop autoplay playsinline preload="auto">
+                        <source src="media/bypass_ours.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="video-progress"><div class="video-progress-bar"></div></div>
+                <figcaption class="video-caption">OpenVLA-OFT + Ours</figcaption>
+            </figure>
+        </div>
+
+
+        <div style="height: var(--spacing-large);"></div>
+
+
         <div class="content-group">
             <div class="code-block">
                 <button class="copy-btn" id="copy-cite" aria-label="Copy citation" title="Copy"><i class="fa-solid fa-copy"></i></button>
@@ -929,6 +965,42 @@
             requestAnimationFrame(rafProgress);
         }
         requestAnimationFrame(rafProgress);
+
+        // ----- bypass pair: keep the two side-by-side rollouts in lockstep -----
+        var bypassPair = document.querySelectorAll("#bypass-row video");
+        if (bypassPair.length === 2) {
+            var bpA = bypassPair[0], bpB = bypassPair[1], bpStarted = false;
+            var bpStart = function () {
+                if (bpStarted || bpA.readyState < 3 || bpB.readyState < 3) { return; }
+                bpStarted = true;
+                bpA.currentTime = 0;
+                bpB.currentTime = 0;
+                var pa = bpA.play(); if (pa && pa.catch) { pa.catch(function () {}); }
+                var pb = bpB.play(); if (pb && pb.catch) { pb.catch(function () {}); }
+            };
+            // hold both videos until both are ready, then start them together at frame 0
+            bpA.pause(); bpB.pause();
+            ["loadeddata", "canplay", "canplaythrough"].forEach(function (ev) {
+                bpA.addEventListener(ev, bpStart);
+                bpB.addEventListener(ev, bpStart);
+            });
+            bpStart();
+            // continuously correct drift (loop-aware): B follows A within ~1 frame
+            var bpSync = function () {
+                if (bpStarted && bpA.duration && bpB.duration) {
+                    var drift = bpA.currentTime - bpB.currentTime;
+                    var half = bpA.duration / 2;
+                    if (drift > half) { drift -= bpA.duration; } else if (drift < -half) { drift += bpA.duration; }
+                    if (Math.abs(drift) > 0.05) { bpB.currentTime = bpA.currentTime; }
+                    if (bpA.paused !== bpB.paused) {
+                        if (bpA.paused) { bpB.pause(); }
+                        else { var pr = bpB.play(); if (pr && pr.catch) { pr.catch(function () {}); } }
+                    }
+                }
+                requestAnimationFrame(bpSync);
+            };
+            requestAnimationFrame(bpSync);
+        }
 
         // ----- lightbox: zoom a video on click; click anywhere closes; cannot be paused -----
         var lightbox = document.getElementById("lightbox");
