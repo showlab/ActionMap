@@ -47,20 +47,73 @@
 
 <br/>
 
-## 🧩 Pre-Release
+## 🧩 Overview
 
-Our code is coming soon. As a preview, we release the [core implementation](heatmap_action_head.py) of our action head. This action head could be used to replace a VLA's native action decoder (e.g., OpenVLA-OFT's L1 regression head). The example below shows how to plug it in.
+ActionMap replaces the single-point action decoder of a vision-language-action model with a voxel action heatmap. The head predicts a probability distribution over a discretized action space, and then decodes that distribution back into a continuous action.
+
+This repository holds one folder per base model, so that each implementation stays self-contained. The OpenVLA-OFT-based implementation is released here, and the Pi-0.5-based implementation will follow in its own folder.
+
+```
+ActionMap/
+├── actionmap_oft/          ActionMap on OpenVLA-OFT: LIBERO training, evaluation, real-robot serving
+│   └── actionmap/          The voxel action heatmap head
+└── actionmap_pi/           ActionMap on Pi-0.5 (planned)
+```
+
+## ⚙️ Installation
+
+Installation covers a conda environment, the pinned dependency stack, and the LIBERO benchmark:
+
+```bash
+git clone https://github.com/showlab/ActionMap.git
+cd ActionMap/actionmap_oft
+```
+
+Follow [actionmap_oft/SETUP.md](actionmap_oft/SETUP.md) for the full sequence. Compiling Flash Attention from source dominates the install time, so expect the last step to take a while.
+
+## 🚀 Quick Start
+
+Download the LIBERO RLDS datasets, which are the ones released with OpenVLA:
+
+```bash
+git clone git@hf.co:datasets/openvla/modified_libero_rlds
+```
+
+Finetune OpenVLA-7B on LIBERO-Spatial with the ActionMap head, using the configuration behind our reported results:
+
+```bash
+bash scripts/train_libero.sh libero_spatial /path/to/modified_libero_rlds 2
+```
+
+Evaluate the resulting policy over 50 trials on each of the 10 tasks in the suite:
+
+```bash
+bash scripts/eval_libero.sh libero_spatial ./runs/<run_name>--10000_chkpt
+```
+
+Both scripts wrap the underlying Python entry points, and [actionmap_oft/LIBERO.md](actionmap_oft/LIBERO.md) shows those commands in full.
+
+## 📚 Documentation
+
+- [SETUP.md](actionmap_oft/SETUP.md) installs the environment, the dependency stack, and the LIBERO benchmark.
+- [LIBERO.md](actionmap_oft/LIBERO.md) walks through LIBERO training and evaluation, including how the two must be kept consistent.
+- [ARGUMENTS.md](actionmap_oft/ARGUMENTS.md) documents every training and evaluation argument.
+- [REAL_ROBOT.md](actionmap_oft/REAL_ROBOT.md) covers the data format, dataset registration, and policy serving for a real robot arm.
+
+## 🔧 Using the Head on Its Own
+
+The head is a self-contained module, so it can replace the action decoder of another vision-language-action model. The example below plugs it into a backbone directly.
 
 ```python
 import torch
-from heatmap_action_head import HeatmapActionHead
+from actionmap import HeatmapActionHead
 
 head = HeatmapActionHead(
     input_dim=4096,           # VLA backbone hidden size
     num_actions_chunk=8,      # action tokens per chunk
     action_dim=7,             # [x, y, z, r, p, w, grip]
-    trans_grid=(32, 32, 16),  # translation voxel grid
-    rot_grid=(16, 16, 16),    # rotation voxel grid
+    trans_grid=(48, 48, 24),  # translation voxel grid
+    rot_grid=(24, 24, 24),    # rotation voxel grid
 )
 
 # Run your VLA backbone and keep the last hidden layer.
@@ -78,6 +131,16 @@ loss.backward()
 # Inference:
 pred_actions = head.predict_action(actions_hidden)       # (B, num_actions_chunk, 7)
 ```
+
+## 📌 TODO
+
+- [x] **Stage 1**: Core implementation of the voxel action heatmap head.
+- [x] **Stage 2**: OpenVLA-OFT-based training and inference code.
+- [ ] **Stage 3**: Pi-0.5-based training and inference code.
+
+## 🙏 Acknowledgements
+
+The implementation in `actionmap_oft/` builds on [OpenVLA-OFT](https://github.com/moojink/openvla-oft) and [OpenVLA](https://github.com/openvla/openvla). We evaluate on the [LIBERO](https://github.com/Lifelong-Robot-Learning/LIBERO) benchmark.
 
 ## 📄 Citation
 

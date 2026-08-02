@@ -1,8 +1,8 @@
 """
 ActionMap voxel action heatmap head.
 
-This implementation can be plugged into a VLA in place of its native action decoder, 
-predicts a heatmap over the action space instead of a singlepoint, and computes its 
+This implementation can be plugged into a VLA in place of its native action decoder,
+predicts a heatmap over the action space instead of a single point, and computes its
 own training loss.
 """
 

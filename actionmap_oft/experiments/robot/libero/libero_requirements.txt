@@ -1,0 +1,8 @@
+imageio[ffmpeg]
+robosuite==1.4.1
+mujoco==3.3.1  # robosuite 1.4.1 does not bound mujoco; 3.4 and later drop the MjData.qM attribute it uses
+bddl
+easydict
+cloudpickle
+gym
+numpy<2  # keep in step with tensorflow 2.15, which the RLDS data pipeline needs
