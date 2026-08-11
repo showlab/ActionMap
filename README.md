@@ -136,7 +136,7 @@ pred_actions = head.predict_action(actions_hidden)       # (B, num_actions_chunk
 
 - [x] **Stage 1**: Core implementation of the voxel action heatmap head
 - [x] **Stage 2**: OpenVLA-OFT-based training and inference code
-- [ ] **Stage 3**: Pi-0.5-based training and inference code
+- [x] **Stage 3**: Pi-0.5-based training and inference code
 
 ## 📄 Citation
 
