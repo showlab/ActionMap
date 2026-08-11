@@ -1,0 +1,6 @@
+[submodule "actionmap_pi/third_party/aloha"]
+	path = actionmap_pi/third_party/aloha
+	url = https://github.com/Physical-Intelligence/aloha.git
+[submodule "actionmap_pi/third_party/libero"]
+	path = actionmap_pi/third_party/libero
+	url = https://github.com/Lifelong-Robot-Learning/LIBERO.git

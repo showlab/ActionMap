@@ -1,0 +1,22 @@
+# Requirements for Franka Pi05 inference on workstation
+# Install with: pip install -r requirements.txt
+
+# Core dependencies (should already be installed via uv sync)
+# numpy
+# jax[cuda12]  # or jax[cuda11] depending on your CUDA version
+
+# Camera support
+pyrealsense2>=2.55.0
+
+# Robot communication
+zerorpc>=0.6.3
+
+# Video/image processing
+opencv-python==4.11.0.86
+moviepy #>=1.0.3
+
+# CLI
+tyro #>=0.8.0
+
+# Optional but recommended
+tqdm #>=4.65.0

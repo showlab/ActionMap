@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Generated files
+*.mp4
+*.avi
+*.jpg
+*.png
+*.jpeg
+camera_snapshot_*.jpg
+rollout_*.mp4
+
+# Custom configs (don't commit your camera serials!)
+my_config.py
+
+# Logs
+*.log
+
+# Cache
+.cache/
